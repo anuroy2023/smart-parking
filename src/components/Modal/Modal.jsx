@@ -5,13 +5,29 @@ import "react-datepicker/dist/react-datepicker.css";
 import '@wojtekmaj/react-timerange-picker/dist/TimeRangePicker.css';
 import 'react-clock/dist/Clock.css';
 
-const Modal = ({isModalOpen, setIsModalOpen, parkingNumber, isBooked}) => {
+const Modal = ({isModalOpen, setIsModalOpen, parkingNumber, isBooked, parkingIsReserved}) => {
     const [startDate, setStartDate] = useState(new Date());
     const [value, onChange] = useState(['10:00', '11:00']);
 
     const setModalOpenHandler =  () => {
         setIsModalOpen(false)
     }
+
+    const BookSlotHandler = () => {
+        fetch('http://10.216.66.151:5000/api/slots', {
+            method: 'POST',
+            body: JSON.stringify({
+                "slot": parkingNumber
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }
+        ).catch((error) => {
+            console.log(error)
+        })
+    }
+
     return (
         <div className={`relative z-10 ${isModalOpen ? 'block' : 'hidden'}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -36,7 +52,7 @@ const Modal = ({isModalOpen, setIsModalOpen, parkingNumber, isBooked}) => {
         
                         <div className="bg-white px-4 rounded-lg shadow mx-auto">
                             <form action="">
-                                {isBooked ? 
+                                {parkingIsReserved ? 
                                 <>
                                     <p for="name" className="block mb-2 text-sm text-gray-600">Booked By : Name</p>
                                     <p for="name" className="block mb-2 text-sm text-gray-600">Car Number : Number</p>
@@ -69,7 +85,9 @@ const Modal = ({isModalOpen, setIsModalOpen, parkingNumber, isBooked}) => {
                                
                                
                                 <div className="bg-gray-50 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                    {isBooked ? <button type="submit" className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">Cencel your parking</button> : <button type="submit" className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">Book your parking</button>} 
+                                    {parkingIsReserved ? 
+                                    <button type="button" className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">Cencel your parking</button> : 
+                                    <button onClick={BookSlotHandler} type="button" className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">Book your parking</button>} 
                                     <button onClick={setModalOpenHandler} type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
                                 </div>
                         

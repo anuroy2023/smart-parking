@@ -1,39 +1,64 @@
 import Modal from '../Modal/Modal'
 import ParkingSpace from '../ParkingSpace/ParkingSpace';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const ParkingMap = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [parkingNumber, setParkingNumber] = useState('');
     const [parkingIsBooked, setParkingIsBooked] = useState(false);
+    const [parkingIsReserved, setParkingIsReserved] = useState(false);
+    // const [parkingDetail, setParkingDetail] = useState([]);
+
     const ParkingClickHandler = (parking) => {
-        setParkingNumber(parking.parkingNumber)
+        console.log('parking', parking)
+        setParkingNumber(parking.slot)
         setParkingIsBooked(parking.isBooked)
-        setIsModalOpen(true)
+        setParkingIsReserved(parking.reserved)
+        if((!parking.isBooked)){
+            setIsModalOpen(true)
+        }
+        
     }
-    console.log('isModalOpen', isModalOpen)
+
     const parkingDetail = [
         {
-            parkingNumber : 'P1',
-            isBooked: false
+            slot : '1',
+            isBooked: false, 
+            reserved: true
         },
         {
-            parkingNumber : 'P2',
-            isBooked: false
-        },
-        {
-            parkingNumber : 'P3',
+            slot : '2',
             isBooked: true,
+            reserved: false
         },
         {
-            parkingNumber : 'P4',
-            isBooked: false
+            slot : '3',
+            isBooked: false,
+            reserved: false
         },
         {
-            parkingNumber : 'P5',
-            isBooked: false
+            slot : '4',
+            isBooked: false,
+            reserved: false
+        },
+        {
+            slot : '5',
+            isBooked: false,
+            reserved: false
         },
     ]
+
+    // useEffect(() => {
+    //     fetch('http://10.216.66.151:5000/api/slots')
+    //     .then((res) => {
+    //         return res.json();
+    //     })
+    //     .then((data) => {
+    //         console.log(data);
+    //         setParkingDetail(data);
+    //     });
+    // }, []) 
+    
     return (
       <div className="App">
       <h1 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight pt-10">Smart Parking</h1>
@@ -45,14 +70,16 @@ const ParkingMap = () => {
             <div className="h-1/3 w-full flex text-white">
                 {parkingDetail.map((parking, index) => {
                     return (
-                        index <= 4 && <ParkingSpace onClick={() => {
+                        index <= 4 && <ParkingSpace 
+                        onClick={() => {
                             ParkingClickHandler(parking)
-                        }} parkingDetail={parking} />
+                        }} 
+                        parkingDetail={parking} />
                     )
                 })}
             </div>
         </div>
-        <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} parkingNumber={parkingNumber} isBooked={parkingIsBooked} />
+        <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} parkingNumber={parkingNumber} isBooked={parkingIsBooked} parkingIsReserved={parkingIsReserved} />
       </div>
     );
     
